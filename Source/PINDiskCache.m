@@ -328,10 +328,10 @@ static NSURL *_sharedTrashURL;
 
 - (PINDiskCacheSerializerBlock)defaultSerializer
 {
-    return ^NSData*(id<NSCoding> object, NSString *key){
+    return ^NSData*(id<NSSecureCoding> object, NSString *key){
         if (@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)) {
             NSError *error = nil;
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:object requiringSecureCoding:NO error:&error];
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:object requiringSecureCoding:YES error:&error];
             PINDiskCacheError(error);
             return data;
         } else {
@@ -869,7 +869,7 @@ static NSURL *_sharedTrashURL;
 {
     [self.operationQueue scheduleOperation:^{
         NSURL *fileURL = nil;
-        id <NSCoding> object = [self objectForKey:key fileURL:&fileURL];
+        id <NSSecureCoding> object = [self objectForKey:key fileURL:&fileURL];
         
         block(self, key, object);
     } withPriority:PINOperationQueuePriorityLow];
@@ -890,12 +890,12 @@ static NSURL *_sharedTrashURL;
     } withPriority:PINOperationQueuePriorityLow];
 }
 
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key completion:(PINDiskCacheObjectBlock)block
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key completion:(PINDiskCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key withAgeLimit:0.0 completion:(PINDiskCacheObjectBlock)block];
 }
 
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit completion:(nullable PINDiskCacheObjectBlock)block
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit completion:(nullable PINDiskCacheObjectBlock)block
 {
     [self.operationQueue scheduleOperation:^{
         NSURL *fileURL = nil;
@@ -907,12 +907,12 @@ static NSURL *_sharedTrashURL;
     } withPriority:PINOperationQueuePriorityLow];
 }
 
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost completion:(nullable PINCacheObjectBlock)block
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost completion:(nullable PINCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key completion:(PINDiskCacheObjectBlock)block];
 }
 
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost ageLimit:(NSTimeInterval)ageLimit completion:(nullable PINCacheObjectBlock)block
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost ageLimit:(NSTimeInterval)ageLimit completion:(nullable PINCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key withAgeLimit:ageLimit completion:(PINDiskCacheObjectBlock)block];
 }
@@ -1052,7 +1052,7 @@ static NSURL *_sharedTrashURL;
     return NO;
 }
 
-- (nullable id<NSCoding>)objectForKey:(NSString *)key
+- (nullable id<NSSecureCoding>)objectForKey:(NSString *)key
 {
     return [self objectForKey:key fileURL:nil];
 }
@@ -1062,7 +1062,7 @@ static NSURL *_sharedTrashURL;
     return [self objectForKey:key];
 }
 
-- (nullable id <NSCoding>)objectForKey:(NSString *)key fileURL:(NSURL **)outFileURL
+- (nullable id <NSSecureCoding>)objectForKey:(NSString *)key fileURL:(NSURL **)outFileURL
 {
     [self lock];
         BOOL containsKey = _metadata[key] != nil || _diskStateKnown == NO;
@@ -1071,7 +1071,7 @@ static NSURL *_sharedTrashURL;
     if (!key || !containsKey)
         return nil;
     
-    id <NSCoding> object = nil;
+    id <NSSecureCoding> object = nil;
     NSURL *fileURL = [self encodedFileURLForKey:key];
     
     NSDate *now = [NSDate date];
@@ -1150,22 +1150,22 @@ static NSURL *_sharedTrashURL;
     return fileURL;
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key
 {
     [self setObject:object forKey:key withAgeLimit:0.0];
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit
 {
     [self setObject:object forKey:key withAgeLimit:ageLimit fileURL:nil];
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost ageLimit:(NSTimeInterval)ageLimit
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost ageLimit:(NSTimeInterval)ageLimit
 {
     [self setObject:object forKey:key withAgeLimit:ageLimit];
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost
 {
     [self setObject:object forKey:key];
 }
@@ -1179,7 +1179,7 @@ static NSURL *_sharedTrashURL;
     }
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit fileURL:(NSURL **)outFileURL
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit fileURL:(NSURL **)outFileURL
 {
     NSAssert(ageLimit <= 0.0 || (ageLimit > 0.0 && _ttlCache), @"ttlCache must be set to YES if setting an object-level age limit.");
 
@@ -1655,7 +1655,7 @@ static NSURL *_sharedTrashURL;
     [self fileURLForKeyAsync:key completion:block];
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key block:(nullable PINDiskCacheObjectBlock)block
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key block:(nullable PINDiskCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key completion:block];
 }

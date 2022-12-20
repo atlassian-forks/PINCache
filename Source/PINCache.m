@@ -130,7 +130,7 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
                     block(self, memoryCacheKey, memoryCacheObject);
                 }];
             } else {
-                [self->_diskCache objectForKeyAsync:memoryCacheKey completion:^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSCoding> diskCacheObject) {
+                [self->_diskCache objectForKeyAsync:memoryCacheKey completion:^(PINDiskCache *diskCache, NSString *diskCacheKey, id <NSSecureCoding> diskCacheObject) {
                     
                     [self->_memoryCache setObjectAsync:diskCacheObject forKey:diskCacheKey completion:nil];
                     
@@ -145,17 +145,17 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
 
 #pragma clang diagnostic pop
 
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key completion:(PINCacheObjectBlock)block
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key completion:(PINCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key withCost:0 completion:block];
 }
 
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit completion:(PINCacheObjectBlock)block
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit completion:(PINCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key withCost:0 ageLimit:ageLimit completion:block];
 }
 
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost completion:(PINCacheObjectBlock)block
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost completion:(PINCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key withCost:cost ageLimit:0.0 completion:block];
 }
@@ -310,17 +310,17 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
     return object;
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key
 {
     [self setObject:object forKey:key withCost:0];
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit
 {
     [self setObject:object forKey:key withCost:0 ageLimit:ageLimit];
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost
 {
     [self setObject:object forKey:key withCost:cost ageLimit:0.0];
 }
@@ -392,12 +392,12 @@ static NSString * const PINCacheSharedName = @"PINCacheShared";
     [self objectForKeyAsync:key completion:block];
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key block:(nullable PINCacheObjectBlock)block
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key block:(nullable PINCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key completion:block];
 }
 
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost block:(nullable PINCacheObjectBlock)block
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost block:(nullable PINCacheObjectBlock)block
 {
     [self setObjectAsync:object forKey:key withCost:cost completion:block];
 }

@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, PINDiskCacheError) {
 /**
  A callback block which provides the cache, key and object as arguments
  */
-typedef void (^PINDiskCacheObjectBlock)(PINDiskCache *cache, NSString *key, id <NSCoding> _Nullable object);
+typedef void (^PINDiskCacheObjectBlock)(PINDiskCache *cache, NSString *key, id <NSSecureCoding> _Nullable object);
 
 /**
  A callback block which provides the key and fileURL of the object
@@ -52,7 +52,7 @@ typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
  *
  *  @return Serialized object representation
  */
-typedef NSData* _Nonnull(^PINDiskCacheSerializerBlock)(id<NSCoding> object, NSString *key);
+typedef NSData* _Nonnull(^PINDiskCacheSerializerBlock)(id<NSSecureCoding> object, NSString *key);
 
 /**
  *  A block used to deserialize objects
@@ -62,7 +62,7 @@ typedef NSData* _Nonnull(^PINDiskCacheSerializerBlock)(id<NSCoding> object, NSSt
  *
  *  @return Deserialized object
  */
-typedef id<NSCoding> _Nonnull(^PINDiskCacheDeserializerBlock)(NSData* data, NSString *key);
+typedef id<NSSecureCoding> _Nonnull(^PINDiskCacheDeserializerBlock)(NSData* data, NSString *key);
 
 /**
  *  A block used to encode keys
@@ -85,7 +85,7 @@ typedef NSString *_Nonnull(^PINDiskCacheKeyDecoderBlock)(NSString *encodedKey);
 
 /**
  `PINDiskCache` is a thread safe key/value store backed by the file system. It accepts any object conforming
- to the `NSCoding` protocol, which includes the basic Foundation data types and collection classes and also
+ to the `NSSecureCoding` protocol, which includes the basic Foundation data types and collection classes and also
  many UIKit classes, notably `UIImage`. All work is performed on a serial queue shared by all instances in
  the app, and archiving is handled by `NSKeyedArchiver`. This is a particular advantage for `UIImage` because
  it skips `UIImagePNGRepresentation()` and retains information like scale and orientation.
@@ -381,7 +381,7 @@ PIN_SUBCLASSING_RESTRICTED
  @param key A key to associate with the object. This string will be copied.
  @param block A block to be executed serially after the object has been stored, or nil.
  */
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key completion:(nullable PINDiskCacheObjectBlock)block;
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key completion:(nullable PINDiskCacheObjectBlock)block;
 
 /**
  Stores an object in the cache for the specified key and age limit. This method returns immediately and executes the
@@ -393,7 +393,7 @@ PIN_SUBCLASSING_RESTRICTED
                  will be used for this object.
  @param block A block to be executed serially after the object has been stored, or nil.
  */
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit completion:(nullable PINDiskCacheObjectBlock)block;
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit completion:(nullable PINDiskCacheObjectBlock)block;
 
 /**
  Stores an object in the cache for the specified key and the specified memory cost. If the cost causes the total
@@ -406,7 +406,7 @@ PIN_SUBCLASSING_RESTRICTED
  @param cost An amount to add to the <memoryCache.totalCost>.
  @param block A block to be executed concurrently after the object has been stored, or nil.
  */
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost completion:(nullable PINCacheObjectBlock)block;
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost completion:(nullable PINCacheObjectBlock)block;
 
 /**
  Stores an object in the cache for the specified key and the specified memory cost and age limit. If the cost causes the total
@@ -421,7 +421,7 @@ PIN_SUBCLASSING_RESTRICTED
                  this object.
  @param block A block to be executed concurrently after the object has been stored, or nil.
  */
-- (void)setObjectAsync:(id <NSCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost ageLimit:(NSTimeInterval)ageLimit completion:(nullable PINCacheObjectBlock)block;
+- (void)setObjectAsync:(id <NSSecureCoding>)object forKey:(NSString *)key withCost:(NSUInteger)cost ageLimit:(NSTimeInterval)ageLimit completion:(nullable PINCacheObjectBlock)block;
 
 /**
  Removes the object for the specified key. This method returns immediately and executes the passed block
@@ -490,7 +490,7 @@ PIN_SUBCLASSING_RESTRICTED
  @param key The key associated with the object.
  @result The object for the specified key.
  */
-- (nullable id <NSCoding>)objectForKey:(NSString *)key;
+- (nullable id <NSSecureCoding>)objectForKey:(NSString *)key;
 
 /**
  Retrieves the file URL for the specified key. This method blocks the calling thread until the
@@ -511,7 +511,7 @@ PIN_SUBCLASSING_RESTRICTED
  @param object An object to store in the cache.
  @param key A key to associate with the object. This string will be copied.
  */
-- (void)setObject:(nullable id <NSCoding>)object forKey:(NSString *)key;
+- (void)setObject:(nullable id <NSSecureCoding>)object forKey:(NSString *)key;
 
 /**
  Stores an object in the cache for the specified key and age limit. This method blocks the calling thread until
@@ -523,7 +523,7 @@ PIN_SUBCLASSING_RESTRICTED
  @param ageLimit The age limit (in seconds) to associate with the object. An age limit <= 0 means there is
                  no object-level age limit and the cache-level TTL will be used for this object.
  */
-- (void)setObject:(nullable id <NSCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit;
+- (void)setObject:(nullable id <NSSecureCoding>)object forKey:(NSString *)key withAgeLimit:(NSTimeInterval)ageLimit;
 
 /**
  Removes objects from the cache, largest first, until the cache is equal to or smaller than the
@@ -579,7 +579,7 @@ typedef void (^PINDiskCacheBlock)(PINDiskCache *cache);
 - (void)containsObjectForKey:(NSString *)key block:(PINDiskCacheContainsBlock)block __attribute__((deprecated));
 - (void)objectForKey:(NSString *)key block:(nullable PINDiskCacheObjectBlock)block __attribute__((deprecated));
 - (void)fileURLForKey:(NSString *)key block:(nullable PINDiskCacheFileURLBlock)block __attribute__((deprecated));
-- (void)setObject:(id <NSCoding>)object forKey:(NSString *)key block:(nullable PINDiskCacheObjectBlock)block __attribute__((deprecated));
+- (void)setObject:(id <NSSecureCoding>)object forKey:(NSString *)key block:(nullable PINDiskCacheObjectBlock)block __attribute__((deprecated));
 - (void)removeObjectForKey:(NSString *)key block:(nullable PINDiskCacheObjectBlock)block __attribute__((deprecated));
 - (void)trimToDate:(NSDate *)date block:(nullable PINDiskCacheBlock)block __attribute__((deprecated));
 - (void)trimToSize:(NSUInteger)byteCount block:(nullable PINDiskCacheBlock)block __attribute__((deprecated));

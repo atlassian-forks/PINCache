@@ -282,12 +282,12 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     self.cache[key] = [self image];
 
     __block BOOL willRemoveObjectBlockCalled = NO;
-    self.cache.diskCache.willRemoveObjectBlock = ^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding> _Nullable object) {
+    self.cache.diskCache.willRemoveObjectBlock = ^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding> _Nullable object) {
         willRemoveObjectBlockCalled = YES;
     };
 
     __block BOOL didRemoveObjectBlockCalled = NO;
-    self.cache.diskCache.didRemoveObjectBlock = ^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding> _Nullable object) {
+    self.cache.diskCache.didRemoveObjectBlock = ^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding> _Nullable object) {
         didRemoveObjectBlockCalled = YES;
     };
     
@@ -659,7 +659,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
         NSString *key = [[NSString alloc] initWithFormat:@"key %zd", index];
         NSString *obj = [[NSString alloc] initWithFormat:@"obj %zd", index];
         dispatch_group_enter(group);
-        [self.cache.diskCache setObjectAsync:obj forKey:key completion:^(PINDiskCache *cache, NSString *key, id<NSCoding> object) {
+        [self.cache.diskCache setObjectAsync:obj forKey:key completion:^(PINDiskCache *cache, NSString *key, id<NSSecureCoding> object) {
             dispatch_group_leave(group);
         }];
     });
@@ -743,13 +743,13 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     }];
     
     dispatch_group_enter(group);
-    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding>  _Nullable object) {
+    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding>  _Nullable object) {
         diskObj1 = object;
         dispatch_group_leave(group);
     }];
     
     dispatch_group_enter(group);
-    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding>  _Nullable object) {
+    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding>  _Nullable object) {
         diskObj2 = object;
         dispatch_group_leave(group);
     }];
@@ -786,13 +786,13 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     }];
     
     dispatch_group_enter(group);
-    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding>  _Nullable object) {
+    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding>  _Nullable object) {
         diskObj1 = object;
         dispatch_group_leave(group);
     }];
     
     dispatch_group_enter(group);
-    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding>  _Nullable object) {
+    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding>  _Nullable object) {
         diskObj2 = object;
         dispatch_group_leave(group);
     }];
@@ -870,7 +870,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
   __block NSURL *diskFileURL = nil;
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
-  [self.cache.diskCache setObjectAsync:[self image] forKey:key completion:^(PINDiskCache *cache, NSString *key, id<NSCoding> object) {
+  [self.cache.diskCache setObjectAsync:[self image] forKey:key completion:^(PINDiskCache *cache, NSString *key, id<NSSecureCoding> object) {
     [cache fileURLForKeyAsync:key completion:^(NSString * _Nonnull key, NSURL * _Nullable fileURL) {
         diskFileURL = fileURL;
         dispatch_semaphore_signal(semaphore);
@@ -917,7 +917,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     }];
 
     dispatch_group_enter(group);
-    [self.cache.diskCache objectForKeyAsync:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding> _Nullable object) {
+    [self.cache.diskCache objectForKeyAsync:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding> _Nullable object) {
         diskObj = object;
         dispatch_group_leave(group);
     }];
@@ -941,7 +941,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     }];
 
     dispatch_group_enter(group);
-    [self.cache.diskCache objectForKeyAsync:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding> _Nullable object) {
+    [self.cache.diskCache objectForKeyAsync:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding> _Nullable object) {
         diskObj = object;
         dispatch_group_leave(group);
     }];
@@ -973,7 +973,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     // Wait for ttlCache to be set
     dispatch_group_t group = dispatch_group_create();
     dispatch_group_enter(group);
-    [self.cache.diskCache objectForKeyAsync:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding>  _Nullable object) {
+    [self.cache.diskCache objectForKeyAsync:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding>  _Nullable object) {
         dispatch_group_leave(group);
     }];
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
@@ -999,7 +999,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
 
     // Wait for ttlCache to be set
     dispatch_group_enter(group);
-    [self.cache.diskCache objectForKeyAsync:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding>  _Nullable object) {
+    [self.cache.diskCache objectForKeyAsync:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding>  _Nullable object) {
         dispatch_group_leave(group);
     }];
     dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
@@ -1028,7 +1028,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     dispatch_group_t group = dispatch_group_create();
     dispatch_group_enter(group);
     __block NSURL *objectURL = nil;
-    [self.cache.diskCache setObjectAsync:[self image] forKey:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSCoding>  _Nullable object) {
+    [self.cache.diskCache setObjectAsync:[self image] forKey:key completion:^(PINDiskCache * _Nonnull cache, NSString * _Nonnull key, id<NSSecureCoding>  _Nullable object) {
         [cache fileURLForKeyAsync:key completion:^(NSString * _Nonnull key, NSURL * _Nullable fileURL) {
             objectURL = fileURL;
             dispatch_group_leave(group);
@@ -1110,13 +1110,13 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     }];
 
     XCTestExpectation *diskObjectForKey1Expectation = [self expectationWithDescription:@"diskCache objectForKeyAsync - #1"];
-    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache *cache, NSString *key, id<NSCoding> object) {
+    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache *cache, NSString *key, id<NSSecureCoding> object) {
         XCTAssertNotNil(object, @"should still be in disk cache");
         [diskObjectForKey1Expectation fulfill];
     }];
 
     XCTestExpectation *diskObjectForKey2Expectation = [self expectationWithDescription:@"diskCache objectForKeyAsync - #2"];
-    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache *cache, NSString *key, id<NSCoding> object) {
+    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache *cache, NSString *key, id<NSSecureCoding> object) {
         XCTAssertNotNil(object, @"should still be in disk cache");
         [diskObjectForKey2Expectation fulfill];
     }];
@@ -1141,13 +1141,13 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     }];
 
     diskObjectForKey1Expectation = [self expectationWithDescription:@"diskCache objectForKeyAsync - #1"];
-    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache *cache, NSString *key, id<NSCoding> object) {
+    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache *cache, NSString *key, id<NSSecureCoding> object) {
         XCTAssertNil(object, @"should not be in disk cache");
         [diskObjectForKey1Expectation fulfill];
     }];
 
     diskObjectForKey2Expectation = [self expectationWithDescription:@"diskCache objectForKeyAsync - #2"];
-    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache *cache, NSString *key, id<NSCoding> object) {
+    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache *cache, NSString *key, id<NSSecureCoding> object) {
         XCTAssertNotNil(object, @"should not be in disk cache");
         [diskObjectForKey2Expectation fulfill];
     }];
@@ -1236,13 +1236,13 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     }];
 
     XCTestExpectation *diskObjectForKey1Expectation = [self expectationWithDescription:@"diskCache objectForKeyAsync - #1"];
-    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache *cache, NSString *key, id<NSCoding> object) {
+    [self.cache.diskCache objectForKeyAsync:key1 completion:^(PINDiskCache *cache, NSString *key, id<NSSecureCoding> object) {
         XCTAssertNil(object, @"should not be in disk cache");
         [diskObjectForKey1Expectation fulfill];
     }];
 
     XCTestExpectation *diskObjectForKey2Expectation = [self expectationWithDescription:@"diskCache objectForKeyAsync - #2"];
-    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache *cache, NSString *key, id<NSCoding> object) {
+    [self.cache.diskCache objectForKeyAsync:key2 completion:^(PINDiskCache *cache, NSString *key, id<NSSecureCoding> object) {
         XCTAssertNotNil(object, @"should not be in disk cache");
         [diskObjectForKey2Expectation fulfill];
     }];
