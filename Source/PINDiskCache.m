@@ -348,7 +348,14 @@ static NSURL *_sharedTrashURL;
             NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
             NSAssert(!error, @"unarchiver init failed with error");
             unarchiver.requiresSecureCoding = YES;
-            return [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+            NSSet *validClasses = [NSSet setWithObjects: NSData.class,
+                                                         NSDate.class,
+                                                         NSNumber.class,
+                                                         NSValue.class,
+                                                         NSString.class,
+                                                         UIImage.class,
+                                                         nil];
+            return [unarchiver decodeObjectOfClasses:validClasses forKey:NSKeyedArchiveRootObjectKey];
         } else {
             return [NSKeyedUnarchiver unarchiveObjectWithData:data];
         }
