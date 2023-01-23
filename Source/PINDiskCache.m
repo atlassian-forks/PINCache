@@ -350,9 +350,15 @@ static NSURL *_sharedTrashURL;
             unarchiver.requiresSecureCoding = YES;
             NSSet *validClasses = [NSSet setWithObjects: NSData.class,
                                                          NSDate.class,
+                                                         NSDateFormatter.class,
                                                          NSNumber.class,
-                                                         NSValue.class,
+                                                         NSNumberFormatter.class,
                                                          NSString.class,
+                                                         NSURL.class,
+                                                         NSURLComponents.class,
+                                                         NSURLQueryItem.class,
+                                                         NSUUID.class,
+                                                         NSValue.class,
                                                          UIImage.class,
                                                          nil];
             return [unarchiver decodeObjectOfClasses:validClasses forKey:NSKeyedArchiveRootObjectKey];
