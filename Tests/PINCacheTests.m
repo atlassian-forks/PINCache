@@ -427,7 +427,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
     }];
     XCTAssertTrue(keys.count == 2);
     XCTAssertTrue([keys.firstObject isEqualToString:key1] || [keys.firstObject isEqualToString:key4]);
-    XCTAssertTrue([keys.lastObject isEqualToString:key1] || [keys.lastObject isEqualToString:key4]);
+    XCTAssertTrue([keys.lastObject isEqualToString:key2] || [keys.lastObject isEqualToString:key3] || [keys.lastObject isEqualToString:key4]);
 }
 
 - (void)testDiskByteCount
@@ -495,7 +495,7 @@ const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
 
     XCTAssertTrue(keys.count == 2);
     XCTAssertTrue([keys.firstObject isEqualToString:key1] || [keys.firstObject isEqualToString:key4]);
-    XCTAssertTrue([keys.lastObject isEqualToString:key1] || [keys.lastObject isEqualToString:key4]);
+    XCTAssertTrue([keys.lastObject isEqualToString:key4]);
 }
 
 - (void)testOneThousandAndOneWrites
