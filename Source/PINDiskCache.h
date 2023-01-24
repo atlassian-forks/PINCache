@@ -3,6 +3,7 @@
 //  Copyright (c) 2015 Pinterest. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "PINCacheMacros.h"
 #import "PINCaching.h"
@@ -240,6 +241,14 @@ PIN_SUBCLASSING_RESTRICTED
  @result The shared singleton cache instance.
  */
 @property (class, readonly, strong) PINDiskCache *sharedCache;
+
+/**
+ A list of classes that can be desearilized by PINDiskCache's `defaultDeserializer`. If decoded of other classes is required then a custom
+ deserializer will be required.
+
+ @result The list of classs that `defaultDeserializer` can decode.
+ */
+@property (class, readonly, strong) NSSet *defaultDeserializerSupportedClasses;
 
 /**
  Empties the trash with `DISPATCH_QUEUE_PRIORITY_BACKGROUND`. Does not use lock.

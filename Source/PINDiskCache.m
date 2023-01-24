@@ -289,6 +289,31 @@ static NSURL *_sharedTrashURL;
     return cache;
 }
 
++ (NSSet *)defaultDeserializerSupportedClasses
+{
+    static NSSet *validClasses;
+
+    static dispatch_once_t predicate;
+
+    dispatch_once(&predicate, ^{
+        validClasses = [[NSSet alloc] initWithObjects: NSData.class,
+                                                       NSDate.class,
+                                                       NSDateFormatter.class,
+                                                       NSNumber.class,
+                                                       NSNumberFormatter.class,
+                                                       NSString.class,
+                                                       NSURL.class,
+                                                       NSURLComponents.class,
+                                                       NSURLQueryItem.class,
+                                                       NSUUID.class,
+                                                       NSValue.class,
+                                                       UIImage.class,
+                                                       nil];
+    });
+
+    return validClasses;
+}
+
 + (NSURL *)cacheURLWithRootPath:(NSString *)rootPath prefix:(NSString *)prefix name:(NSString *)name
 {
     NSString *pathComponent = [[NSString alloc] initWithFormat:@"%@.%@", prefix, name];
@@ -348,20 +373,7 @@ static NSURL *_sharedTrashURL;
             NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
             NSAssert(!error, @"unarchiver init failed with error");
             unarchiver.requiresSecureCoding = YES;
-            NSSet *validClasses = [NSSet setWithObjects: NSData.class,
-                                                         NSDate.class,
-                                                         NSDateFormatter.class,
-                                                         NSNumber.class,
-                                                         NSNumberFormatter.class,
-                                                         NSString.class,
-                                                         NSURL.class,
-                                                         NSURLComponents.class,
-                                                         NSURLQueryItem.class,
-                                                         NSUUID.class,
-                                                         NSValue.class,
-                                                         UIImage.class,
-                                                         nil];
-            return [unarchiver decodeObjectOfClasses:validClasses forKey:NSKeyedArchiveRootObjectKey];
+            return [unarchiver decodeObjectOfClasses:PINDiskCache.defaultDeserializerSupportedClasses forKey:NSKeyedArchiveRootObjectKey];
         } else {
             return [NSKeyedUnarchiver unarchiveObjectWithData:data];
         }
