@@ -21,3 +21,9 @@
 #define PIN_NOESCAPE
 #endif // #if defined(__has_attribute) && __has_attribute(noescape)
 #endif // #ifndef PIN_NOESCAPE
+
+#if TARGET_OS_IPHONE || TARGET_OS_TV
+#define PINImage     UIImage
+#elif TARGET_OS_MAC
+#define PINImage     NSImage
+#endif

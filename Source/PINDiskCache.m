@@ -307,7 +307,9 @@ static NSURL *_sharedTrashURL;
                                                        NSURLQueryItem.class,
                                                        NSUUID.class,
                                                        NSValue.class,
-                                                       UIImage.class,
+#if TARGET_OS_IPHONE || TARGET_OS_TV
+                                                       PINImage.class,
+#endif
                                                        nil];
     });
 

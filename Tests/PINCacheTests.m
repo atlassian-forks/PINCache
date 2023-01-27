@@ -14,13 +14,6 @@
 #import "NSDate+PINCacheTests.h"
 #import "PINDiskCache+PINCacheTests.h"
 
-
-#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
-  typedef UIImage PINImage;
-#else
-  typedef NSImage PINImage;
-#endif
-
 static NSString * const PINCacheTestName = @"PINCacheTest";
 const NSTimeInterval PINCacheTestBlockTimeout = 20.0;
 
