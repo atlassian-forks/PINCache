@@ -23,7 +23,7 @@
 #endif // #ifndef PIN_NOESCAPE
 
 #if TARGET_OS_IPHONE || TARGET_OS_TV
-#define PINImage     UIImage
+#define PINImage UIImage
 #elif TARGET_OS_MAC
-#define PINImage     NSImage
+#define PINImage NSImage
 #endif

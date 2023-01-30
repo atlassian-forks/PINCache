@@ -8,6 +8,13 @@
 #import <UIKit/UIKit.h>
 #endif
 
+// We need this redundant check as iOS also satisfies `TARGET_OS_MAC` so we need to check for an
+// iOS build first, before checking for macOS, to explicitly rule it out.
+#if TARGET_OS_IPHONE
+#elif TARGET_OS_MAC
+#import <AppKit/AppKit.h>
+#endif
+
 #import <pthread.h>
 #import <sys/xattr.h>
 
@@ -307,9 +314,7 @@ static NSURL *_sharedTrashURL;
                                                        NSURLQueryItem.class,
                                                        NSUUID.class,
                                                        NSValue.class,
-#if TARGET_OS_IPHONE || TARGET_OS_TV
                                                        PINImage.class,
-#endif
                                                        nil];
     });
 
