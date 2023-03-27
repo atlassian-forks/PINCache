@@ -6,10 +6,10 @@ import PackageDescription
 let package = Package(
     name: "PINCache",
     platforms: [
-        .macOS(.v10_10),
-        .iOS(.v9),
-        .watchOS(.v2),
-        .tvOS(.v9)
+        .macOS(.v10_14),
+        .iOS(.v11),
+        .watchOS(.v4),
+        .tvOS(.v11)
     ],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
