@@ -59,10 +59,7 @@ static PINOperationDataCoalescingBlock PINDiskTrimmingDateCoalescingBlock = ^id(
 const char * PINDiskCacheFileSystemRepresentation(NSURL *url)
 {
 #ifdef __MAC_10_13 // Xcode >= 9
-    // -fileSystemRepresentation is available on macOS >= 10.9
-    if (@available(macOS 10.9, iOS 7.0, watchOS 2.0, tvOS 9.0, *)) {
-      return url.fileSystemRepresentation;
-    }
+    return url.fileSystemRepresentation;
 #endif
     return [url.path cStringUsingEncoding:NSUTF8StringEncoding];
 }
@@ -361,29 +358,21 @@ static NSURL *_sharedTrashURL;
 - (PINDiskCacheSerializerBlock)defaultSerializer
 {
     return ^NSData*(id<NSSecureCoding> object, NSString *key){
-        if (@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)) {
-            NSError *error = nil;
-            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:object requiringSecureCoding:YES error:&error];
-            PINDiskCacheError(error);
-            return data;
-        } else {
-            return [NSKeyedArchiver archivedDataWithRootObject:object];
-        }
+        NSError *error = nil;
+        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:object requiringSecureCoding:YES error:&error];
+        PINDiskCacheError(error);
+        return data;
     };
 }
 
 - (PINDiskCacheDeserializerBlock)defaultDeserializer
 {
     return ^id(NSData * data, NSString *key){
-        if (@available(iOS 11.0, macOS 10.13, tvOS 11.0, watchOS 4.0, *)) {
-            NSError *error = nil;
-            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-            NSAssert(!error, @"unarchiver init failed with error");
-            unarchiver.requiresSecureCoding = YES;
-            return [unarchiver decodeObjectOfClasses:PINDiskCache.defaultDeserializerSupportedClasses forKey:NSKeyedArchiveRootObjectKey];
-        } else {
-            return [NSKeyedUnarchiver unarchiveObjectWithData:data];
-        }
+        NSError *error = nil;
+        NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+        NSAssert(!error, @"unarchiver init failed with error");
+        unarchiver.requiresSecureCoding = YES;
+        return [unarchiver decodeObjectOfClasses:PINDiskCache.defaultDeserializerSupportedClasses forKey:NSKeyedArchiveRootObjectKey];
     };
 }
 
@@ -393,23 +382,9 @@ static NSURL *_sharedTrashURL;
         if (![decodedKey length]) {
             return @"";
         }
-        
-        if (@available(macOS 10.9, iOS 7.0, tvOS 9.0, watchOS 2.0, *)) {
-            NSString *encodedString = [decodedKey stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet characterSetWithCharactersInString:@".:/%"] invertedSet]];
-            return encodedString;
-        } else {
-            CFStringRef static const charsToEscape = CFSTR(".:/%");
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            CFStringRef escapedString = CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                                (__bridge CFStringRef)decodedKey,
-                                                                                NULL,
-                                                                                charsToEscape,
-                                                                                kCFStringEncodingUTF8);
-#pragma clang diagnostic pop
-            
-            return (__bridge_transfer NSString *)escapedString;
-        }
+
+        NSString *encodedString = [decodedKey stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet characterSetWithCharactersInString:@".:/%"] invertedSet]];
+        return encodedString;
     };
 }
 
@@ -419,19 +394,8 @@ static NSURL *_sharedTrashURL;
         if (![encodedKey length]) {
             return @"";
         }
-        
-        if (@available(macOS 10.9, iOS 7.0, tvOS 9.0, watchOS 2.0, *)) {
-            return [encodedKey stringByRemovingPercentEncoding];
-        } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            CFStringRef unescapedString = CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
-                                                                                                  (__bridge CFStringRef)encodedKey,
-                                                                                                  CFSTR(""),
-                                                                                                  kCFStringEncodingUTF8);
-#pragma clang diagnostic pop
-            return (__bridge_transfer NSString *)unescapedString;
-        }
+
+        return [encodedKey stringByRemovingPercentEncoding];
     };
 }
 
