@@ -4,13 +4,10 @@
 
 #import "PINDiskCache.h"
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0
-#import <UIKit/UIKit.h>
-#endif
-
-// We need this redundant check as iOS also satisfies `TARGET_OS_MAC` so we need to check for an
+// The order is important here as iOS also satisfies `TARGET_OS_MAC` so we need to check for an
 // iOS build first, before checking for macOS, to explicitly rule it out.
 #if TARGET_OS_IPHONE
+#import <UIKit/UIKit.h>
 #elif TARGET_OS_MAC
 #import <AppKit/AppKit.h>
 #endif
@@ -58,10 +55,7 @@ static PINOperationDataCoalescingBlock PINDiskTrimmingDateCoalescingBlock = ^id(
 
 const char * PINDiskCacheFileSystemRepresentation(NSURL *url)
 {
-#ifdef __MAC_10_13 // Xcode >= 9
     return url.fileSystemRepresentation;
-#endif
-    return [url.path cStringUsingEncoding:NSUTF8StringEncoding];
 }
 
 @interface PINDiskCacheMetadata : NSObject
